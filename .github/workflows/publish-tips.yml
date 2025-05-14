@@ -1,0 +1,32 @@
+name: Publish Daily Tips
+
+# Runs at 08:00 and 20:00 UTC every day
+on:
+  schedule:
+    - cron:  '0 8,20 * * *'
+  workflow_dispatch:    # Allows you to manually trigger in GitHub UI
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Use Node.js 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install node-fetch@2
+
+      - name: Run publish-tips script
+        run: node publish-tips.js
+        env:
+          FD_KEY:      ${{ secrets.FD_KEY }}
+          WP_USER:     ${{ secrets.WP_USER }}
+          WP_APP_PASS: ${{ secrets.WP_APP_PASS }}
+          ODDS_KEY:    ${{ secrets.ODDS_KEY }}
+
